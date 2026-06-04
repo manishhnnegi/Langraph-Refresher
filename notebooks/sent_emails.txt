@@ -1,0 +1,14 @@
+=== NEW EMAIL ===
+To: john@gmail.com
+Subject: Meeting
+Content:
+We will meet tomorrow at 10 AM
+=================
+
+=== NEW EMAIL ===
+To: smriti@gmail.com
+Subject: Urgent: Project Discussion Tomorrow at 4 PM
+Content:
+Hi Smriti, I would like to have an urgent call with you tomorrow at 4 PM to discuss the project. Please let me know if this time works for you.
+=================
+
