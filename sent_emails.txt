@@ -1,0 +1,18 @@
+=== NEW EMAIL ===
+To: manish@gmail.com
+Subject: Urgent Meeting Tomorrow
+Content:
+Please attend the urgent meeting tomorrow at 11 AM.
+=================
+
+=== NEW EMAIL ===
+To: ram@gmail.com
+Subject: Action Required: Log Your Time Before EOD
+Content:
+Hi Ram,
+
+This is a reminder that you have not yet logged your time. Kindly do so before the End of Day (EOD) today. Failure to do so will result in an escalation.
+
+Thank you.
+=================
+

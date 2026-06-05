@@ -11,3 +11,7 @@ uv venv --python 3.11
 
 # Add dependencies
 uv add ruff
+
+
+# run server
+uvicorn main:app --reload

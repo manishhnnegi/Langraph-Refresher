@@ -10,272 +10,143 @@
             --sidebar-color: #171717;
             --text-color: #ececec;
             --input-bg: #2f2f2f;
-            --user-msg-bg: #2f2f2f;
-            --bot-msg-bg: transparent;
             --border-color: #424242;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { display: flex; background-color: var(--bg-color); color: var(--text-color); height: 100vh; overflow: hidden; }
 
-        body {
-            display: flex;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            height: 100vh;
-            overflow: hidden;
-        }
+        .sidebar { width: 260px; background-color: var(--sidebar-color); padding: 10px; display: flex; flex-direction: column; border-right: 1px solid var(--border-color); }
+        .new-chat-btn { background: transparent; border: 1px solid var(--border-color); color: white; padding: 12px; border-radius: 6px; cursor: pointer; text-align: left; font-size: 14px; }
+        .new-chat-btn:hover { background-color: #2a2a2a; }
 
-        /* Sidebar similar to ChatGPT */
-        .sidebar {
-            width: 260px;
-            background-color: var(--sidebar-color);
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border-color);
-        }
+        .chat-container { flex: 1; display: flex; flex-direction: column; height: 100%; position: relative; }
+        .chat-header { padding: 14px 20px; font-size: 16px; font-weight: 600; border-bottom: 1px solid var(--border-color); text-align: center; }
+        .messages-box { flex: 1; overflow-y: auto; padding: 20px 0; display: flex; flex-direction: column; }
 
-        .new-chat-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            color: white;
-            padding: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            text-align: left;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
+        .message-row { width: 100%; display: flex; padding: 24px 20%; border-bottom: 1px solid rgba(0,0,0,0.1); }
+        .message-row.user { background-color: var(--bg-color); }
+        .message-row.bot { background-color: #212121; }
 
-        .new-chat-btn:hover {
-            background-color: #2a2a2a;
-        }
+        .avatar { width: 30px; height: 30px; border-radius: 4px; margin-right: 16px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; flex-shrink: 0; }
+        .user .avatar { background-color: #543a3a; }
+        .bot .avatar { background-color: #10a37f; color: white; }
+        .message-content { font-size: 16px; line-height: 1.5; word-break: break-word; flex: 1; }
 
-        /* Main Window Layout */
-        .chat-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            position: relative;
-        }
+        /* Approval Card Element Styles */
+        .approval-card { background: #2f2f2f; border: 1px solid #ff9800; border-radius: 8px; padding: 16px; margin-top: 10px; }
+        .approval-card h4 { color: #ff9800; margin-bottom: 8px; }
+        .email-preview { background: #1e1e1e; padding: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; font-size: 13px; margin: 8px 0; border-left: 3px solid #ff9800; color: #00ff66; }
+        .btn-group { display: flex; gap: 10px; margin-top: 12px; }
+        .action-btn { padding: 8px 16px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        .approve-btn { background-color: #10a37f; color: white; }
+        .cancel-btn { background-color: #d32f2f; color: white; }
 
-        .chat-header {
-            padding: 14px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            border-bottom: 1px solid var(--border-color);
-            text-align: center;
-        }
+        .input-area { padding: 20px 20%; background-color: var(--bg-color); }
+        .input-wrapper { position: relative; display: flex; background-color: var(--input-bg); border-radius: 12px; border: 1px solid var(--border-color); padding: 10px; }
+        #user-input { width: 100%; background: transparent; border: none; color: white; font-size: 16px; outline: none; resize: none; max-height: 200px; }
+        #send-btn { position: absolute; right: 12px; bottom: 10px; background-color: #676767; color: #212121; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+        #send-btn.active { background-color: white; color: black; }
 
-        .messages-box {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .message-row {
-            width: 100%;
-            display: flex;
-            padding: 24px 20%;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .message-row.user {
-            background-color: var(--bg-color);
-        }
-
-        .message-row.bot {
-            background-color: #212121;
-        }
-
-        .avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 4px;
-            margin-right: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        .user .avatar {
-            background-color: #543a3a;
-        }
-
-        .bot .avatar {
-            background-color: #10a37f;
-            color: white;
-        }
-
-        .message-content {
-            font-size: 16px;
-            line-height: 1.5;
-            word-break: break-word;
-            padding-top: 2px;
-        }
-
-        /* Fixed Footer Input styling */
-        .input-area {
-            padding: 20px 20%;
-            background-color: var(--bg-color);
-        }
-
-        .input-wrapper {
-            position: relative;
-            display: flex;
-            background-color: var(--input-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            padding: 10px;
-        }
-
-        #user-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 16px;
-            outline: none;
-            resize: none;
-            max-height: 200px;
-            padding-right: 40px;
-        }
-
-        #send-btn {
-            position: absolute;
-            right: 12px;
-            bottom: 10px;
-            background-color: #676767;
-            color: #212121;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        #send-btn.active {
-            background-color: white;
-            color: black;
-        }
-
-        /* Processing indicator dot sequence */
-        .typing-indicator span {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background-color: #8e8e93;
-            border-radius: 50%;
-            margin-right: 4px;
-            animation: bounce 1.3s infinite both;
-        }
+        .typing-indicator span { display: inline-block; width: 8px; height: 8px; background-color: #8e8e93; border-radius: 50%; margin-right: 4px; animation: bounce 1.3s infinite both; }
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
         .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
 
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
-
-        /* Responsive spacing adjustment */
-        @media (max-width: 768px) {
-            .message-row, .input-area { padding-left: 5%; padding-right: 5%; }
-            .sidebar { display: none; }
-        }
+        @media (max-width: 768px) { .message-row, .input-area { padding-left: 5%; padding-right: 5%; } .sidebar { display: none; } }
     </style>
 </head>
 <body>
 
-    <!-- Left navigation section -->
     <div class="sidebar">
         <button class="new-chat-btn" onclick="createNewChat()">+ New chat</button>
     </div>
 
-    <!-- Main Chat Workspace -->
     <div class="chat-container">
-        <div class="chat-header">LangGraph Gemini Engine</div>
-        
-        <div class="messages-box" id="messages-box">
-            <!-- Dynamic context loads here -->
-        </div>
+        <div class="chat-header">LangGraph Gemini Workspace (Human-in-the-loop)</div>
+        <div class="messages-box" id="messages-box"></div>
 
         <div class="input-area">
             <div class="input-wrapper">
-                <textarea id="user-input" rows="1" placeholder="Message LangGraph Chatbot..." oninput="toggleButton()"></textarea>
+                <textarea id="user-input" rows="1" placeholder="Type a message (e.g., 'Draft an email to boss@company.com about updates')..." oninput="toggleButton()"></textarea>
                 <button id="send-btn" onclick="sendMessage()">➔</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Track unique active thread session strings
         let currentThreadId = "session_" + Math.random().toString(36).substring(2, 9);
         const inputField = document.getElementById("user-input");
         const sendBtn = document.getElementById("send-btn");
         const messagesBox = document.getElementById("messages-box");
 
-        // Submit action triggers via standard carriage return
         inputField.addEventListener("keydown", function(e) {
-            if (e.key === "Enter" && !e.shiftKey) {
+            if (e.key === "Enter" && !e.shiftKey && !inputField.disabled) {
                 e.preventDefault();
                 sendMessage();
             }
         });
 
         function toggleButton() {
-            if (inputField.value.trim().length > 0) {
-                sendBtn.classList.add("active");
-            } else {
-                sendBtn.classList.remove("active");
-            }
+            sendBtn.classList.toggle("active", inputField.value.trim().length > 0);
         }
 
         function createNewChat() {
             messagesBox.innerHTML = "";
+            inputField.disabled = false;
+            inputField.placeholder = "Type a message...";
             currentThreadId = "session_" + Math.random().toString(36).substring(2, 9);
         }
 
         function appendMessage(sender, text) {
             const row = document.createElement("div");
             row.classList.add("message-row", sender);
-
-            const avatar = document.createElement("div");
-            avatar.classList.add("avatar");
-            avatar.innerText = sender === "user" ? "U" : "AI";
-
-            const content = document.createElement("div");
-            content.classList.add("message-content");
-            content.innerText = text;
-
-            row.appendChild(avatar);
-            row.appendChild(content);
+            row.innerHTML = `<div class="avatar">${sender === 'user' ? 'U' : 'AI'}</div><div class="message-content"></div>`;
+            row.querySelector(".message-content").innerText = text;
             messagesBox.appendChild(row);
             messagesBox.scrollTop = messagesBox.scrollHeight;
             return row;
+        }
+
+        function showApprovalCard(data) {
+            const row = document.createElement("div");
+            row.classList.add("message-row", "bot");
+            
+            // CORRECT FIX: Safely bind values returned directly from backend API parameters
+            const args = data.tool_args || {};
+            const question = data.question || "Do you approve sending this email?";
+            
+            row.innerHTML = `
+                <div class="avatar">AI</div>
+                <div class="message-content">
+                    <div class="approval-card">
+                        <h4>⚠️ Action Approval Required</h4>
+                        <p><strong>Request:</strong> ${question}</p>
+                        <div class="email-preview"><strong>To:</strong> ${args.to || ''}\n<strong>Subject:</strong> ${args.subject || ''}\n\n${args.content || ''}</div>
+                        <div class="btn-group">
+                            <button class="action-btn approve-btn" onclick="submitDecision(this, 'approve')">Approve & Send</button>
+                            <button class="action-btn cancel-btn" onclick="submitDecision(this, 'cancel')">Cancel Request</button>
+                        </div>
+                    </div>
+                </div>`;
+            
+            messagesBox.appendChild(row);
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+            
+            // Lock texting capability during pending interrupt states
+            inputField.disabled = true;
+            inputField.placeholder = "Please approve or cancel the pending operation above...";
         }
 
         async function sendMessage() {
             const text = inputField.value.trim();
             if (!text) return;
 
-            // Render text UI immediately 
             appendMessage("user", text);
             inputField.value = "";
             inputField.rows = 1;
             toggleButton();
 
-            // Append loading animation node
             const loaderRow = document.createElement("div");
             loaderRow.classList.add("message-row", "bot");
             loaderRow.innerHTML = `<div class="avatar">AI</div><div class="message-content typing-indicator"><span></span><span></span><span></span></div>`;
@@ -290,16 +161,45 @@
                 });
                 
                 const data = await response.json();
-                loaderRow.remove(); // Clear processing animation
+                loaderRow.remove();
 
-                if (response.ok) {
-                    appendMessage("bot", data.reply);
+                if (data.status === "interrupt_required") {
+                    showApprovalCard(data);
                 } else {
-                    appendMessage("bot", "Error structural exception: " + data.detail);
+                    appendMessage("bot", data.reply || "Done");
                 }
             } catch (err) {
                 loaderRow.remove();
                 appendMessage("bot", "Network layer transmission broken.");
+            }
+        }
+
+        async function submitDecision(btnElement, choice) {
+            // Replace group container buttons with processing text immediately
+            const container = btnElement.closest(".btn-group");
+            container.innerHTML = `<em>Processing choice: ${choice}...</em>`;
+
+            try {
+                const response = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ thread_id: currentThreadId, action: choice })
+                });
+                const data = await response.json();
+                
+                // Unlock input box controls
+                inputField.disabled = false;
+
+                if (data.status === "interrupt_required") {
+                    showApprovalCard(data);
+                } else if (data.status === "success") {
+                    appendMessage("bot", data.reply || "Done");
+                } else {
+                    appendMessage("bot", data.reply || "No response received.");
+                }
+            } catch (err) {
+                inputField.disabled = false;
+                appendMessage("bot", "Approval request failed. Please try again.");
             }
         }
     </script>
