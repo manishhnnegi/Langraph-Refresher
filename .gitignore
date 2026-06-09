@@ -6,9 +6,17 @@ config/.env
 __pycache__/
 *.pyc
 
+
+# Private Notebooks
+notebooks/9_whatsapp.ipynb
+
 # Jupyter notebooks checkpoints
 .ipynb_checkpoints/
 
 # Virtual environment
 venv/
+
+client_secret.json
+token.json
+
 
