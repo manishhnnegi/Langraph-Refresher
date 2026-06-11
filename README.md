@@ -18,3 +18,7 @@ uvicorn main:app --reload   ---> chat bot using html jawascript frontend
 
 # agent server
 uvicorn twlio_wtsapp_gmail_agent:app --port 5000 ---> agent integrated with whatsapp ( twilio) and gmailapi
+
+
+# LANGCHAIN BASICS
+https://github.com/AnmolTomer/langchain-basics
