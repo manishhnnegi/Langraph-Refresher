@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Manish",
+    "id": "EMP101",
+    "joining_date": "2022-03-15",
+    "domain": "AI",
+    "designation": "Software Engineer",
+    "band": "B2",
+    "salary": "80 LPA",
+    "experience": "4 years"
+  },
+  {
+    "name": "Rahul",
+    "id": "EMP102",
+    "joining_date": "2020-07-10",
+    "domain": "Backend",
+    "designation": "Senior Engineer",
+    "band": "B3",
+    "salary": "18 LPA",
+    "experience": "6 years"
+  }
+]

@@ -22,3 +22,19 @@ uvicorn twlio_wtsapp_gmail_agent:app --port 5000 ---> agent integrated with what
 
 # LANGCHAIN BASICS
 https://github.com/AnmolTomer/langchain-basics
+
+
+
+
+
+# MCP server and other server details
+
+1. 'database',
+2. 'employee_mcp_server.py'    ----------> these three to understand resources and prompts in MCP server used in 10_mcp_basics.ipynb
+3. 'employee_client.py'
+
+
+1. 'web_time_mcp.py' ---------> used in 10_mcp_basics.ipynb
+
+1. 'session_server.py'----> to understand session used in 'session_client.ipynb'
+    
