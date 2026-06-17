@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mongodb:
+    # CHANGE THIS LINE from mongo:latest to mongo:4.4
+    image: mongo:4.4
+    container_name: mongodb_container
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+    volumes:
+      - mongo-data:/data/db
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo_express_container
+    ports:
+      - "8081:8081"
+    environment:
+    # ADD THESE TWO LINES TO CUSTOMIZE YOUR WEBSITE LOGIN:
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: password123
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password123
+      ME_CONFIG_MONGODB_SERVER: mongodb
+
+volumes:
+  mongo-data:
