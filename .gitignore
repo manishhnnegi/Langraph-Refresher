@@ -19,5 +19,6 @@ venv/
 
 client_secret.json
 token.json
+concurrent_prog
 
 

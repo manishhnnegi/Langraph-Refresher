@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:latest
+    container_name: my-postgres-compose
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: my_database
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: my-pgadmin-compose
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: adminpassword
+    ports:
+      - "8088:80"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
