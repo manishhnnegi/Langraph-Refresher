@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Style Clone</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <div class="sidebar">
+            <a href="/" class="new-chat-btn">+ New Chat</a>
+            <div class="session-list">
+                <h3>Recent Chats</h3>
+                {% for past_id in history_list %}
+                    <a href="/?session_id={{ past_id }}" class="session-item {% if past_id == session_id %}active{% endif %}">
+                        💬 {{ past_id[:8] }}...
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>One-Word AI Assistant</h2>
+                <small style="color: #9b9b9b;">Active Session: {{ session_id[:8] }}...</small>
+            </div>
+            
+            <div class="chat-box" id="chatBox">
+                </div>
+
+            <form id="chatForm" class="input-container">
+                <input type="text" id="userInput" placeholder="Type a message..." required autocomplete="off">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const sessionId = "{{ session_id }}";
+        const chatBox = document.getElementById('chatBox');
+        const chatForm = document.getElementById('chatForm');
+        const userInput = document.getElementById('userInput');
+
+        // FUNCTION: Run immediately on page load to fetch database history for this session
+        async function loadExistingConversation() {
+            chatBox.innerHTML = ''; // Empty out box
+            try {
+                const response = await fetch(`/history/${sessionId}`);
+                const data = await response.json();
+                
+                if (data.messages && data.messages.length > 0) {
+                    data.messages.forEach(msg => {
+                        appendMessage(msg.text, msg.sender === 'user' ? 'user-message' : 'bot-message');
+                    });
+                } else {
+                    appendMessage("Hello! Ask me anything, but I will only reply with one word.", 'bot-message');
+                }
+            } catch (err) {
+                appendMessage("Failed to pull conversation logs from database.", 'bot-message');
+            }
+        }
+
+        // Intercept user inputs
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            appendMessage(text, 'user-message');
+            userInput.value = '';
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, session_id: sessionId })
+                });
+                const data = await response.json();
+                
+                if(data.response) {
+                    appendMessage(data.response, 'bot-message');
+                } else {
+                    appendMessage("Error: " + data.error, 'bot-message');
+                }
+            } catch (error) {
+                appendMessage("Failed to connect to backend.", 'bot-message');
+            }
+        });
+
+        function appendMessage(text, className) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', className);
+            msgDiv.innerText = text;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // Initialize historical search on startup
+        loadExistingConversation();
+    </script>
+</body>
+</html>
