@@ -7,7 +7,6 @@ config/.env
 __pycache__/
 *.pyc
 
-
 # Private Notebooks
 notebooks/9_whatsapp.ipynb
 
@@ -16,9 +15,8 @@ notebooks/9_whatsapp.ipynb
 
 # Virtual environment
 venv/
-
 client_secret.json
 token.json
 concurrent_prog
-
+database
 
