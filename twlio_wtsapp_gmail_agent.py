@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 from google.auth.transport.requests import Request as GoogleRequest
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+
 
 # Twilio and LangGraph imports
 from twilio.twiml.messaging_response import MessagingResponse
@@ -25,56 +27,105 @@ load_dotenv()
 
 app = FastAPI(title="WhatsApp LangGraph Real Email Bot")
 
-# --- 1. GMAIL OAUTH2 SETUP ---
-SCOPES = ["https://google.com"]
-SENDER_EMAIL = "xyz@gmail.com"  # Your sender Gmail address
+# # --- 1. GMAIL OAUTH2 SETUP ---
+# SCOPES = ["https://google.com"]
+SENDER_EMAIL = "manishnegi.tech@gmail.com"  # Your sender Gmail address
+
+# def get_gmail_credentials():
+#     creds = None
+#     if os.path.exists("token.json"):
+#         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+#     if not creds or not creds.valid:
+#         if creds and creds.expired and creds.refresh_token:
+#             creds.refresh(GoogleRequest())
+#         else:
+#             flow = InstalledAppFlow.from_client_secrets_file("client_secret.json", SCOPES)
+#             creds = flow.run_local_server(port=0)
+#             with open("token.json", "w") as token:
+#                 token.write(creds.to_json())
+#     return creds
+
+
+SCOPES = [
+    "https://www.googleapis.com/auth/gmail.modify"
+]
+SENDER_EMAIL = "manishnegi.tech@gmail.com"
+# FIX: Keep file paths consistent using a single variable
+TOKEN_PATH = os.path.join("gmail_wtsapp", "token.json")
+CLIENT_SECRET_PATH = os.path.join("gmail_wtsapp", "client_secret.json")
 
 def get_gmail_credentials():
     creds = None
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    
+    # 1. Read existing token if it exists
+    if os.path.exists(TOKEN_PATH):
+        creds = Credentials.from_authorized_user_file(TOKEN_PATH, SCOPES)
+        
+    # 2. Refresh or authenticate if credentials aren't valid
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(GoogleRequest())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("client_secret.json", SCOPES)
+            # FIX: Ensure client_secret.json is looked for in the correct directory
+            if not os.path.exists(CLIENT_SECRET_PATH):
+                raise FileNotFoundError(f"Please put your downloaded Google credentials file at: {CLIENT_SECRET_PATH}")
+                
+            flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_PATH, SCOPES)
             creds = flow.run_local_server(port=0)
-            with open("token.json", "w") as token:
+            
+            # FIX: Ensure the target directory exists before trying to write the token file
+            os.makedirs(os.path.dirname(TOKEN_PATH), exist_ok=True)
+            with open(TOKEN_PATH, "w") as token:
                 token.write(creds.to_json())
+                
     return creds
 
 
-# --- 2. UPDATED LANGCHAIN EMAIL TOOL ---
 @tool
 def write_email(to: str, subject: str, content: str) -> str:
-    """Send an actual email using the Google Gmail API via OAuth2."""
+    """Send an email using the Gmail API with OAuth2."""
+
     try:
-        # Get active Google credentials
+        # Get valid OAuth credentials
         creds = get_gmail_credentials()
-        access_token = creds.token
 
-        # Create the email content
-        msg = MIMEText(content)
-        msg["Subject"] = subject
-        msg["From"] = SENDER_EMAIL
-        msg["To"] = to
+        # Create Gmail API service
+        service = build(
+            "gmail",
+            "v1",
+            credentials=creds
+        )
 
-        # 2. FIX: Use the correct smtp address string instead of "://gmail.com"
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.starttls()
-        server.ehlo()
+        # Create email
+        message = MIMEText(content)
 
-        auth_string = f"user={SENDER_EMAIL}\x01auth=Bearer {access_token}\x01\x01"
-        auth_bytes = base64.b64encode(auth_string.encode()).decode()
-        server.docmd("AUTH", "XOAUTH2 " + auth_bytes)
+        message["To"] = to
+        message["From"] = SENDER_EMAIL
+        message["Subject"] = subject
 
-        # Send the actual email
-        server.send_message(msg)
-        server.quit()
-        
-        return f"Success! The email has been successfully sent to {to}."
+        # Gmail API expects URL-safe base64
+        raw_message = base64.urlsafe_b64encode(
+            message.as_bytes()
+        ).decode()
+
+        # Send email
+        result = service.users().messages().send(
+            userId="me",
+            body={
+                "raw": raw_message
+            }
+        ).execute()
+
+        message_id = result.get("id")
+
+        return  f"Success! Email has been sent to {to}. "
+           
+
     except Exception as e:
-        return f"Failed to send email to {to}. Error details: {str(e)}"
+        return f"Failed to send email to {to}. "
+            
+    
+
     
 # --- 3. LANGGRAPH AGENT FLOW (Same Logic) ---
 tools = [write_email]
@@ -201,3 +252,8 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
         twiml_response.message(str(final_output) if final_output else "Processed successfully.")
 
     return Response(content=str(twiml_response), media_type="application/xml")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("twlio_wtsapp_gmail_agent:app", host="0.0.0.0", port=8000, reload=True)

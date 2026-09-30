@@ -23,3 +23,10 @@ Content:
 Hi Mukesh, Let's meet tomorrow at 1 PM for a quick project meeting. Thanks.
 =================
 
+=== NEW EMAIL ===
+To: manishnegi101@gmail.com
+Subject: Quick Project Meeting Tomorrow at 3 PM
+Content:
+Hi Manish, just a quick reminder that we have a project meeting tomorrow at 3 PM. See you there!
+=================
+

@@ -19,4 +19,4 @@ venv/
 client_secret.json
 token.json
 
-
+.secrets/

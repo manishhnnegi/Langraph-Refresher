@@ -44,7 +44,14 @@ class State(MessagesState):
 def chatbot_node(state: State):
     system_prompt = SystemMessage(content="You are a helpful assistant. Use tools whenever required.")
     messages = [system_prompt] + state["messages"]
-    response = llm_with_tools.invoke(messages)
+    try:
+        response = llm_with_tools.invoke(messages)
+    except Exception as e:
+        response = AIMessage(content=f"Error during LLM invocation: {str(e)}")
+
+    if not response:
+        response = "nothing written"
+
     return {"messages": [response]}
 
 def route_tools(state: State):
@@ -152,3 +159,7 @@ async def whatsapp_webhook(From: str = Form(...), Body: str = Form(...)):
         twiml_response.message(str(final_output) if final_output else "Processed successfully.")
 
     return Response(content=str(twiml_response), media_type="application/xml")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("twlio_wtsapp_agent:app", host="0.0.0.0", port=8000, reload=True)
